@@ -1,0 +1,564 @@
+/* =========================================================
+   EL BOSQUE ARDIENTE - STYLESHEET
+   Aesthetics: Glassmorphism, Dark Obsidian & Fiery Accents
+   ========================================================= */
+
+:root {
+  --bg-deep: #060709;
+  --fire-red: #ff3b14;
+  --fire-orange: #ff7300;
+  --fire-amber: #ffaa00;
+  --fire-gold: #ffd24d;
+  --fire-glow: rgba(255, 100, 20, 0.4);
+  
+  --glass-bg: rgba(14, 16, 22, 0.72);
+  --glass-border: rgba(255, 140, 50, 0.18);
+  --glass-hover: rgba(255, 140, 50, 0.28);
+  
+  --text-main: #f5f6f8;
+  --text-muted: #9aa0aa;
+  
+  --font-title: 'Cinzel', serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  --transition-smooth: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  touch-action: none;
+}
+
+/* =========================================================
+   CANVAS CONTAINER
+   ========================================================= */
+#canvas-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background: #000;
+  cursor: crosshair;
+}
+
+#webgl-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* =========================================================
+   CONTACT FLARE (CURSOR HEAT LIGHT)
+   ========================================================= */
+.contact-flare {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  mix-blend-mode: screen;
+}
+
+.contact-flare.active {
+  opacity: 1;
+}
+
+.flare-core {
+  position: absolute;
+  inset: 35%;
+  background: radial-gradient(circle, #fff 10%, #ffe066 50%, rgba(255,100,0,0) 80%);
+  border-radius: 50%;
+  filter: blur(4px);
+}
+
+.flare-halo {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255, 115, 0, 0.7) 0%, rgba(255, 40, 0, 0.3) 45%, transparent 75%);
+  border-radius: 50%;
+  filter: blur(12px);
+  animation: flarePulse 1.8s infinite ease-in-out;
+}
+
+@keyframes flarePulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.18); opacity: 1; }
+}
+
+/* =========================================================
+   TOP FLOATING BAR (EXHIBITION BAR)
+   ========================================================= */
+.exhibition-bar {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  right: 20px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  z-index: 10;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 80, 0, 0.08);
+  transition: var(--transition-smooth);
+}
+
+.exhibition-bar.ui-hidden {
+  transform: translateY(-90px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pulse-indicator {
+  width: 10px;
+  height: 10px;
+  background-color: var(--fire-orange);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--fire-orange);
+  animation: liveBlink 1.6s infinite ease-in-out;
+}
+
+@keyframes liveBlink {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 14px var(--fire-amber); }
+}
+
+.artwork-title {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 40%, var(--fire-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+}
+
+.artwork-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================================
+   BUTTONS & QUICK ACTIONS
+   ========================================================= */
+.quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  height: 38px;
+  min-width: 38px;
+  padding: 0 12px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-icon:hover {
+  background: var(--glass-hover);
+  border-color: rgba(255, 140, 50, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 80, 0, 0.25);
+}
+
+.btn-icon:active {
+  transform: translateY(1px);
+}
+
+.btn-icon .icon {
+  width: 17px;
+  height: 17px;
+}
+
+.btn-icon .flame-icon {
+  color: var(--fire-orange);
+}
+
+.btn-icon.active {
+  background: rgba(255, 100, 20, 0.22);
+  border-color: var(--fire-orange);
+  color: var(--fire-amber);
+}
+
+/* =========================================================
+   INTERACTION HINT
+   ========================================================= */
+.interaction-hint {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 22px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  border-radius: 30px;
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 100, 20, 0.15);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.interaction-hint.fade-out {
+  opacity: 0;
+  transform: translate(-50%, 20px);
+}
+
+.hint-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 115, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fire-amber);
+}
+
+.hint-icon svg {
+  width: 18px;
+  height: 18px;
+  animation: handWave 2s infinite ease-in-out;
+}
+
+@keyframes handWave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.hint-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.hint-text strong {
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.hint-text span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   SETTINGS DRAWER / PANEL
+   ========================================================= */
+.settings-panel {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  width: 360px;
+  max-height: calc(100vh - 120px);
+  background: rgba(12, 14, 18, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  z-index: 20;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 80, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  transform: translateX(400px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.settings-panel.open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel-header {
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-header h2 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--fire-amber);
+}
+
+.panel-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--fire-amber);
+  background: rgba(255, 120, 20, 0.15);
+  border: 1px solid rgba(255, 120, 20, 0.35);
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+}
+
+.btn-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.panel-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.setting-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Segmented Control */
+.segmented-control {
+  display: flex;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.segmented-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 10px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.segmented-btn:hover {
+  color: #fff;
+}
+
+.segmented-btn.active {
+  background: rgba(255, 115, 0, 0.25);
+  color: var(--fire-amber);
+  border: 1px solid rgba(255, 115, 0, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Slider Controls */
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.slider-header span {
+  font-size: 0.75rem;
+  color: var(--fire-gold);
+  font-weight: 600;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--fire-orange);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--fire-orange);
+  transition: transform 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  background: var(--fire-amber);
+}
+
+/* Keyboard shortcuts list */
+.shortcuts-guide {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.shortcuts-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.shortcuts-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+kbd {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--fire-amber);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-family: monospace;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-width: 20px;
+  text-align: center;
+}
+
+/* =========================================================
+   UNHIDE UI FLOATING BUTTON
+   ========================================================= */
+.btn-unhide-ui {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(14, 16, 22, 0.65);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  transition: var(--transition-smooth);
+}
+
+.btn-unhide-ui:hover {
+  background: rgba(255, 115, 0, 0.25);
+  border-color: var(--fire-orange);
+  transform: scale(1.1);
+}
+
+.btn-unhide-ui svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* =========================================================
+   HELPER UTILITIES
+   ========================================================= */
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .artwork-subtitle {
+    display: none;
+  }
+  .btn-label {
+    display: none;
+  }
+  .settings-panel {
+    width: calc(100vw - 30px);
+    right: 15px;
+  }
+}

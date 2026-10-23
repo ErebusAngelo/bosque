@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>El Bosque Ardiente - Instalación Interactiva LiDAR</title>
+  <meta name="description" content="Obra interactiva para LiDAR y pantalla táctil: transición orgánica con shader de fuego entre bosque frondoso y bosque en llamas.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="installation-mode">
+  <!-- WebGL Render Canvas -->
+  <div id="canvas-container">
+    <canvas id="webgl-canvas"></canvas>
+  </div>
+
+  <!-- Interactive Cursor Flare (Follows hand in LiDAR/Mouse mode) -->
+  <div id="contact-flare" class="contact-flare">
+    <div class="flare-core"></div>
+    <div class="flare-halo"></div>
+  </div>
+
+  <!-- Exhibition Top Floating Bar -->
+  <header id="exhibition-bar" class="exhibition-bar">
+    <div class="title-group">
+      <span class="pulse-indicator"></span>
+      <h1 class="artwork-title">El Bosque Ardiente</h1>
+      <span class="artwork-subtitle">Obra Interactiva LiDAR</span>
+    </div>
+
+    <div class="quick-actions">
+      <button id="btn-sound" class="btn-icon" title="Activar/Desactivar Sonido de Fuego (M)" aria-label="Sonido">
+        <svg id="icon-sound-on" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <svg id="icon-sound-off" class="icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      </button>
+
+      <button id="btn-reset" class="btn-icon" title="Restaurar Bosque (R)" aria-label="Restaurar Bosque">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+          <path d="M3 3v5h5"></path>
+        </svg>
+        <span class="btn-label">Restaurar</span>
+      </button>
+
+      <button id="btn-burn-all" class="btn-icon" title="Ignición Total (B)" aria-label="Quemar Todo">
+        <svg class="icon flame-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2c-.3 1.2-1.5 2.5-2.5 3.5-1.5 1.5-3.5 3.5-3.5 6.5 0 4.4 3.6 8 8 8s8-3.6 8-8c0-4-3-6-4.5-8-.3.8-.9 1.5-1.5 2-1-2-1.5-3.5-2-4z"/>
+        </svg>
+        <span class="btn-label">Ignición</span>
+      </button>
+
+      <button id="btn-demo" class="btn-icon" title="Modo Demo Automático (D)" aria-label="Modo Demo">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span class="btn-label">Demo</span>
+      </button>
+
+      <button id="btn-settings" class="btn-icon" title="Panel de Parámetros (P)" aria-label="Parámetros">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span class="btn-label">Parámetros (P)</span>
+      </button>
+
+      <button id="btn-fullscreen" class="btn-icon" title="Pantalla Completa (F)" aria-label="Pantalla Completa">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
+
+      <button id="btn-hide-ui" class="btn-icon" title="Ocultar Interfaz (H)" aria-label="Ocultar UI">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Hint (Fades out once user interacts) -->
+  <aside id="interaction-hint" class="interaction-hint">
+    <div class="hint-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+      </svg>
+    </div>
+    <div class="hint-text">
+      <strong>Pasa tu mano o el cursor por la pantalla</strong>
+      <span>El fuego consumirá el bosque revelando las llamas bajo tus dedos</span>
+    </div>
+  </aside>
+
+  <!-- Settings Drawer / Modal for Exhibition Tuning (Toggle with 'P') -->
+  <aside id="settings-panel" class="settings-panel">
+    <div class="panel-header">
+      <div class="panel-title-wrap">
+        <h2>Panel de Parámetros</h2>
+        <span class="panel-badge">Tecla [P]</span>
+      </div>
+      <button id="btn-close-settings" class="btn-close" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <div class="panel-body">
+      <!-- Slider: Flame Height / Thickness -->
+      <div class="setting-group">
+        <div class="slider-header">
+          <label for="slider-flame-height">Alto del Fuego (Grosor vertical)</label>
+          <span id="flame-height-val">65 px</span>
+        </div>
+        <input type="range" id="slider-flame-height" min="20" max="130" value="65" step="2">
+        <p class="setting-desc">Mantiene la altura generosa y presencia de la llama.</p>
+      </div>
+
+      <!-- Slider: Trail Length / Duration -->
+      <div class="setting-group">
+        <div class="slider-header">
+          <label for="slider-trail-length">Largo de la Estela (Duración)</label>
+          <span id="trail-length-val">1.4 s</span>
+        </div>
+        <input type="range" id="slider-trail-length" min="0.3" max="3.5" value="1.4" step="0.1">
+        <p class="setting-desc">Controla qué tan larga se extiende la estela detrás de la mano.</p>
+      </div>
+
+      <!-- Slider: Small Start Radius -->
+      <div class="setting-group">
+        <div class="slider-header">
+          <label for="slider-min-radius">Inicio Pequeño (Ignición sutil)</label>
+          <span id="min-radius-val">12 px</span>
+        </div>
+        <input type="range" id="slider-min-radius" min="4" max="30" value="12" step="1">
+        <p class="setting-desc">Radio inicial antes de que la llama se expanda.</p>
+      </div>
+
+      <!-- Slider: Healing / Regrowth -->
+      <div class="setting-group">
+        <div class="slider-header">
+          <label for="slider-recovery">Tiempo de Curado (Regeneración)</label>
+          <span id="recovery-val">0.85 s</span>
+        </div>
+        <input type="range" id="slider-recovery" min="0.2" max="3.0" value="0.85" step="0.05">
+        <p class="setting-desc">Velocidad con la que el bosque verde se vuelve a dibujar sobre el fuego.</p>
+      </div>
+
+      <!-- Slider: Fire Intensity -->
+      <div class="setting-group">
+        <div class="slider-header">
+          <label for="slider-flame-intensity">Intensidad del Fuego y Brillo</label>
+          <span id="flame-intensity-val">1.3</span>
+        </div>
+        <input type="range" id="slider-flame-intensity" min="0.5" max="2.5" value="1.3" step="0.1">
+      </div>
+
+      <!-- Slider: Flame Edge Width -->
+      <div class="setting-group">
+        <div class="slider-header">
+          <label for="slider-edge-width">Ancho de la Frontera Ardiente</label>
+          <span id="edge-width-val">0.30</span>
+        </div>
+        <input type="range" id="slider-edge-width" min="0.10" max="0.50" value="0.30" step="0.02">
+      </div>
+
+      <!-- Slider: Embers / Sparks -->
+      <div class="setting-group">
+        <div class="slider-header">
+          <label for="slider-embers">Chispas y Cenizas Flotantes</label>
+          <span id="embers-val">Media</span>
+        </div>
+        <input type="range" id="slider-embers" min="0" max="3" value="2" step="1">
+      </div>
+
+      <!-- Section: Interaction Mode -->
+      <div class="setting-group">
+        <label class="group-title">Modo de Interacción</label>
+        <div class="segmented-control">
+          <button id="mode-hover" class="segmented-btn active" data-mode="hover">
+            <span>Pasar Mano (LiDAR / Hover)</span>
+          </button>
+          <button id="mode-click" class="segmented-btn" data-mode="click">
+            <span>Arrastrar / Clic</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section: Fit Mode -->
+      <div class="setting-group">
+        <label class="group-title">Ajuste de Pantalla</label>
+        <div class="segmented-control">
+          <button id="fit-cover" class="segmented-btn active" data-fit="cover">Cover (Llenar)</button>
+          <button id="fit-contain" class="segmented-btn" data-fit="contain">Contain (Completo)</button>
+        </div>
+      </div>
+
+      <!-- Section: Keyboard shortcuts reference -->
+      <div class="setting-group shortcuts-guide">
+        <label class="group-title">Atajos de Teclado</label>
+        <ul class="shortcuts-list">
+          <li><kbd>F</kbd> Pantalla completa</li>
+          <li><kbd>H</kbd> Ocultar / Mostrar toda la interfaz</li>
+          <li><kbd>R</kbd> Restaurar bosque verde</li>
+          <li><kbd>B</kbd> Quemar todo progresivamente</li>
+          <li><kbd>M</kbd> Silenciar / Activar sonido</li>
+          <li><kbd>D</kbd> Activar / Desactivar modo Demo</li>
+          <li><kbd>P</kbd> Abrir / Ocultar este panel de parámetros</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Unhide Button (shown when UI is hidden) -->
+  <button id="btn-unhide-ui" class="btn-unhide-ui hidden" title="Mostrar Interfaz (H)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  </button>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
